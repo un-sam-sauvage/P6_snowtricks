@@ -7,9 +7,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Models\DB;
 
-class HomeController extends AbstractController{
+class HomeController{
 
-	#[Route('/')]
+	#[Route('/', name:'homepage')]
 	public function index () {
+		
 	}
 }
