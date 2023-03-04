@@ -10,7 +10,25 @@
 		{% block stylesheets %}
 			{{ encore_entry_link_tags('app') }}
 		{% endblock %}
-
+		{% block navbar %}
+			<nav class="navbar navbar-light bg-light">
+				<a href="/" class="navbar-brand">Snowtricks</a>
+				<ul class="navbar-nav">
+					{% if username is defined and username is empty %}
+					<li class="nav-item">
+						<a class="nav-link" href="/logout">Logout</a>
+					</li>
+					{% else %}
+					<li class="nav-item">
+						<a class="nav-link" href="/login">Login</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/register">Register</a>
+					</li>
+					{% endif %}
+				</ul>
+			</nav>
+		{% endblock %}
 		{% block javascripts %}
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}

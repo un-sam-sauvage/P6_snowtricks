@@ -4,6 +4,11 @@
 {% endblock %}
 {% block body %}
 	{# {{parent()}} permet d'appeler le contenu du block de base sinon, l'écrase.#}
-	<div class="container"></div>
+	<div class="container">
+		<h1>Welcome {{username}}</h1>
+		<h1>on snowtrick's website</h1>
+		<h2>A community forum where you can share awesome tricks from snow sports </h2>
+		<a href="/logout">Logout</a>
+	</div>
 	
 {% endblock %}
