@@ -14,7 +14,7 @@
 			<nav class="navbar navbar-light bg-light">
 				<a href="/" class="navbar-brand">Snowtricks</a>
 				<ul class="navbar-nav">
-					{% if username is defined and username is empty %}
+					{% if username is defined and username is not empty %}
 					<li class="nav-item">
 						<a class="nav-link" href="/logout">Logout</a>
 					</li>

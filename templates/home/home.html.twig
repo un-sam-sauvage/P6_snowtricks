@@ -9,6 +9,12 @@
 		<h1>on snowtrick's website</h1>
 		<h2>A community forum where you can share awesome tricks from snow sports </h2>
 		<a href="/logout">Logout</a>
+
+		<div class="posts">
+			{% for post in posts %}
+				<p>{{ post.name }}</p>
+			{% endfor %}
+		</div>
 	</div>
 	
 {% endblock %}
