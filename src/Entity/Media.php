@@ -19,6 +19,10 @@ class Media
     #[ORM\Column]
     private ?bool $isVideo = null;
 
+    #[ORM\ManyToOne(inversedBy: 'media')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Posts $post = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +48,18 @@ class Media
     public function setIsVideo(bool $isVideo): self
     {
         $this->isVideo = $isVideo;
+
+        return $this;
+    }
+
+    public function getPost(): ?Posts
+    {
+        return $this->post;
+    }
+
+    public function setPost(?Posts $post): self
+    {
+        $this->post = $post;
 
         return $this;
     }
