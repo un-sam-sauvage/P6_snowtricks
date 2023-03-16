@@ -9,25 +9,20 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PostsType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options): void
-	{
-		$builder
-			->add('name')
-			->add('content')
-			->add('categories')
-			->add('author')
-			->add('media', FileType::class, [
-				'label' => 'media',
-				'required' => false,
-				
-			])
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('name')
+            ->add('content')
+            ->add('categories')
+            ->add('author')
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver): void
-	{
-		$resolver->setDefaults([
-			'data_class' => Posts::class,
-		]);
-	}
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Posts::class,
+        ]);
+    }
 }
