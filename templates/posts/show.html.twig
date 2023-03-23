@@ -20,8 +20,12 @@
                 <td>{{ post.content }}</td>
             </tr>
             <tr>
-                <th>PostGroup</th>
-                <td>{{ post.postGroup }}</td>
+                <th>Categories</th>
+                {% for category in post.categories %}
+                    <td>
+                        {{category.name}}
+                    </td>
+                {% endfor %}
             </tr>
         </tbody>
     </table>
