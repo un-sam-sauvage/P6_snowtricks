@@ -37,13 +37,15 @@ class PostsController extends AbstractController
 			/** @var UploadedFile $imageFile */
 			$imageFile = $form->get('media')->getData();
 			$postsRepository->save($post, true);
-			if ($imageFile) {
-				$imageFileName = $fileUploader->upload($imageFile);
-				$media = new Media();
-				$media->setPath($imageFileName);
-				$media->setPost($post);
-				$media->setIsVideo(false);
-				$mediaRepository->save($media, true);
+			foreach ($imageFile as $image) {
+				if ($image) {
+					$imageFileName = $fileUploader->upload($image);
+					$media = new Media();
+					$media->setPath($imageFileName);
+					$media->setPost($post);
+					$media->setIsVideo(false);
+					$mediaRepository->save($media, true);
+				}
 			}
 
 			return $this->redirectToRoute('app_posts_index', [], Response::HTTP_SEE_OTHER);

@@ -20,7 +20,8 @@ class PostsType extends AbstractType
 			->add('media', FileType::class, 
 				array(
 					'label' => 'image',
-					'mapped' => false
+					'mapped' => false,
+					'multiple' => 'multiple'
 				)
 			)
 		;
