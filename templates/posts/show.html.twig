@@ -31,7 +31,11 @@
 				<th>Medias</th>
 				{% for media in post.medias %}
 					<td>
-						<img src="{{ asset('uploads/pictures/' ~ media.path) }}">
+						{% if media.isVideo %}
+							<iframe width="560" height="315" src="{{media.path}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+						{% else %}
+							<img src="{{ asset('uploads/pictures/' ~ media.path) }}">
+						{% endif %}
 					</td>
 				{% endfor %}
 			</tr>

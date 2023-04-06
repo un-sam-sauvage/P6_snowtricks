@@ -4,12 +4,12 @@ namespace App\Form;
 
 use App\Entity\Posts;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\All;
 
 class PostsType extends AbstractType
 {
@@ -23,36 +23,39 @@ class PostsType extends AbstractType
 			->add('media', FileType::class, 
 				array(
 					'label' => 'image',
+					'required' => false,
 					'mapped' => false,
-					'multiple' => 'multiple',
+					'multiple' => true,
 					'constraints' => [
-						new File([
-							'maxSize' => '1024k',
-							'mimeTypes' => [
-								'image/jpeg',
-								'image/png',
-							],
-							'mimeTypesMessage' => 'Please upload a valid PDF document',
+						new All ([
+							'constraints' => [
+								new File([
+									'maxSize' => '1024k',
+									'mimeTypes' => [
+										'image/jpeg',
+										'image/png',
+									],
+									'mimeTypesMessage' => 'Please upload a valid img document',
+								])
+							]
 						])
 					]
 				)
 			)
-			//ca ne me convient pas à voir ce qu'on peut faire de mieux
-			->add('video', CollectionType::class, 
-				[
-					'entry_type' => TextType::class,
+			->add('video', TextType::class, 
+				array(
+					'label' => 'video',
 					'mapped' => false,
-					'allow_add' => true,
-					'prototype' => true
-				]
-			)
-		;
+					'required' => false,
+					'allow_extra_fields' => true
+				)
+			);
 	}
 
 	public function configureOptions(OptionsResolver $resolver): void
 	{
 		$resolver->setDefaults([
-			'data_class' => Posts::class,
+			'data_class' => Posts::class
 		]);
 	}
 }

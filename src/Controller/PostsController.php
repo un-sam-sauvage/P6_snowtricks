@@ -33,10 +33,10 @@ class PostsController extends AbstractController
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
+			$postsRepository->save($post, true);
 
 			/** @var UploadedFile $imageFile */
 			$imageFile = $form->get('media')->getData();
-			$postsRepository->save($post, true);
 			foreach ($imageFile as $image) {
 				if ($image) {
 					$imageFileName = $fileUploader->upload($image);
@@ -48,10 +48,23 @@ class PostsController extends AbstractController
 				}
 			}
 
+			$videos = $form->get('video')->getData();
+			foreach ($videos as $video) {
+				if ($video) {
+					$videoLink = new Media();
+					$video = str_replace("watch?v=", "embed/", $video);
+					$videoLink->setPath($video);
+					$videoLink->setPost($post);
+					$videoLink->setIsVideo(true);
+					$mediaRepository->save($videoLink, true);
+				}
+			}
+
+			
 			return $this->redirectToRoute('app_posts_index', [], Response::HTTP_SEE_OTHER);
 		}
 
-		return $this->renderForm('posts/new.html.twig', [
+		return $this->render('posts/new.html.twig', [
 			'post' => $post,
 			'form' => $form,
 		]);
@@ -66,7 +79,7 @@ class PostsController extends AbstractController
 	}
 
 	#[Route('/{id}/edit', name: 'app_posts_edit', methods: ['GET', 'POST'])]
-	public function edit(Request $request, Posts $post, PostsRepository $postsRepository): Response
+	public function edit(Request $request, Posts $post, PostsRepository $postsRepository, FileUploader $fileUploader, MediaRepository $mediaRepository): Response
 	{
 		$form = $this->createForm(PostsType::class, $post);
 		$form->handleRequest($request);
@@ -74,6 +87,30 @@ class PostsController extends AbstractController
 		if ($form->isSubmitted() && $form->isValid()) {
 			$postsRepository->save($post, true);
 
+			/** @var UploadedFile $imageFile */
+			$imageFile = $form->get('media')->getData();
+			foreach ($imageFile as $image) {
+				if ($image) {
+					$imageFileName = $fileUploader->upload($image);
+					$media = new Media();
+					$media->setPath($imageFileName);
+					$media->setPost($post);
+					$media->setIsVideo(false);
+					$mediaRepository->save($media, true);
+				}
+			}
+
+			$videos = $form->get('video')->getData();
+			foreach ($videos as $video) {
+				if ($video) {
+					$videoLink = new Media();
+					$video = str_replace("watch?v=", "embed/", $video);
+					$videoLink->setPath($video);
+					$videoLink->setPost($post);
+					$videoLink->setIsVideo(true);
+					$mediaRepository->save($videoLink, true);
+				}
+			}
 			return $this->redirectToRoute('app_posts_index', [], Response::HTTP_SEE_OTHER);
 		}
 
