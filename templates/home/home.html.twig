@@ -1,20 +1,75 @@
 {% extends "base.html.twig" %}
 {% block stylesheets %}
-
+<style>
+	#welcome-message {
+		display: flex;
+		justify-content: center;
+		background-color: #e07a5f;
+		width: 100%;
+		font-weight: bold;
+		padding: 5px;
+		color: #534741;
+	}
+	#welcome-message > p {
+		margin: 0;
+	}
+	#posts {
+		width: 50%;
+		margin: 2% auto 0;
+		display: flex;
+		flex-direction: column;
+		gap: 25px;
+	}
+	.post-card {
+		background-color: #81b29a;
+		color: #3d405b;
+		border: 1px solid #638475;
+		border-radius: 23px;
+		padding: 2%;
+		position: relative;
+	}
+	.post-title {
+		font-weight: bold;
+		text-transform: uppercase;
+	}
+	.post-link {
+		position: absolute;
+		bottom: 2%;
+		right: 2%;
+		text-decoration: none;
+		color: #3d405b;
+	}
+	.post-link::before {
+		content: "→";
+		text-align: center;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		transform: scaleX(0);
+		background-color: #81b29a;
+		transition: 0.25s;
+	}
+	.post-link:hover::before {
+		transform: scaleX(100%);
+		color: #032539;
+	}
+</style>
 {% endblock %}
 {% block body %}
 	{# {{parent()}} permet d'appeler le contenu du block de base sinon, l'écrase.#}
-	<div class="container">
-		<h1>Welcome {{username}}</h1>
-		<h1>on snowtrick's website</h1>
-		<h2>A community forum where you can share awesome tricks from snow sports </h2>
-		<a href="/logout">Logout</a>
+	<div id="welcome-message">
+		<p>Welcome {{username}} on snowtrick's website. A community forum where you can share awesome tricks from snow sports !</p>
+	</div>
 
-		<div class="posts">
-			{% for post in posts %}
-				<p>{{ post.name }}</p>
-			{% endfor %}
-		</div>
+	<h1>LAST POSTS</h1>
+	<div id="posts">
+		{% for post in posts %}
+			<div class="post-card">
+				<p class="post-title">{{ post.name }}</p>
+				<p class="post-content">{{post.content}}</p>
+				<a class="post-link" href="/posts/{{post.id}}">Go to post</a>
+			</div>
+		{% endfor %}
 	</div>
 	
 {% endblock %}

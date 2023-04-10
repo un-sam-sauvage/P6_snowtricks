@@ -3,6 +3,7 @@
 	<button class="btn btn-primary" id="add-video">Ajouter une video</button>
 	<button class="btn btn-success">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
+
 <script>
 	let inputPost = document.getElementById("posts_video");
 	inputPost.name += "[]";

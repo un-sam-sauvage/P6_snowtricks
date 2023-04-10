@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Posts;
 use App\Entity\Media;
+use App\Form\CommentsType;
 use App\Form\PostsType;
 use App\Repository\MediaRepository;
 use App\Repository\PostsRepository;
@@ -73,8 +74,13 @@ class PostsController extends AbstractController
 	#[Route('/{id}', name: 'app_posts_show', methods: ['GET'])]
 	public function show(Posts $post): Response
 	{
+		$form = $this->createForm(CommentsType::class, null, [
+			'action' => $this->generateUrl("app_comments_new", ["id" => $post->getId()]) ,
+			'method' => 'POST'
+		]);
 		return $this->render('posts/show.html.twig', [
 			'post' => $post,
+			'form' => $form
 		]);
 	}
 
@@ -114,7 +120,7 @@ class PostsController extends AbstractController
 			return $this->redirectToRoute('app_posts_index', [], Response::HTTP_SEE_OTHER);
 		}
 
-		return $this->renderForm('posts/edit.html.twig', [
+		return $this->render('posts/edit.html.twig', [
 			'post' => $post,
 			'form' => $form,
 		]);
