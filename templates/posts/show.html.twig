@@ -1,54 +1,41 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Posts{% endblock %}
+{% block stylesheet %}
 
+{% endblock %}
 {% block body %}
-	<h1>Posts</h1>
 
-	<table class="table">
-		<tbody>
-			<tr>
-				<th>Id</th>
-				<td>{{ post.id }}</td>
-			</tr>
-			<tr>
-				<th>Name</th>
-				<td>{{ post.name }}</td>
-			</tr>
-			<tr>
-				<th>Content</th>
-				<td>{{ post.content }}</td>
-			</tr>
-			<tr>
-				<th>Categories</th>
-				{% for category in post.categories %}
-					<td>
-						{{category.name}}
-					</td>
-				{% endfor %}
-			</tr>
-			<tr>
-				<th>Medias</th>
-				{% for media in post.medias %}
-					<td>
-						{% if media.isVideo %}
-							<iframe width="560" height="315" src="{{media.path}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-						{% else %}
-							<img src="{{ asset('uploads/pictures/' ~ media.path) }}">
-						{% endif %}
-					</td>
-				{% endfor %}
-			</tr>
-		</tbody>
-	</table>
-		{{ form_start(form)  }}
-		<button class="btn btn-success">{{ button_label|default('Save') }}</button>
-		{{ form_end(form) }}
-	
-	{% for comment in post.comments %}
-	<div>
-	 <p>{{ comment.title}}</p>
-	 <p>{{ comment.content }}</p>
+	<div id="post">
+		<h1>{{ post.name }}</h1>
+		{% for category in post.categories %}
+			<td>
+				{{category.name}}
+			</td>
+		{% endfor %}
+		<td>{{ post.content }}</td>
+
+		<th>Medias</th>
+		{% for media in post.medias %}
+			<td>
+				{% if media.isVideo %}
+					<iframe width="560" height="315" src="{{media.path}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+				{% else %}
+					<img src="{{ asset('uploads/pictures/' ~ media.path) }}">
+				{% endif %}
+			</td>
+		{% endfor %}
+	</div>
+	<div id="comments">
+			{{ form_start(form)  }}
+				<button class="btn btn-success">{{ button_label|default('Save') }}</button>
+			{{ form_end(form) }}
+		
+		{% for comment in post.comments %}
+		<div>
+			<p>{{ comment.title}}</p>
+			<p>{{ comment.content }}</p>
+		</div>
 	</div>
 
 	{% endfor %}
