@@ -74,13 +74,18 @@ class PostsController extends AbstractController
 	#[Route('/{id}', name: 'app_posts_show', methods: ['GET'])]
 	public function show(Posts $post): Response
 	{
+		$isAuthor = ($this->getUser() == $post->getAuthor() ? true : false);
+		//TODO:
+		//faire les condition : si auteur || si admin
+		// $hasPermission = false;
 		$form = $this->createForm(CommentsType::class, null, [
 			'action' => $this->generateUrl("app_comments_new", ["id" => $post->getId()]) ,
 			'method' => 'POST'
 		]);
 		return $this->render('posts/show.html.twig', [
 			'post' => $post,
-			'form' => $form
+			'form' => $form,
+			'isAuthor' => $isAuthor
 		]);
 	}
 

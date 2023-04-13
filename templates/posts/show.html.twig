@@ -13,11 +13,57 @@
 		gap: 50px;
 		align-items: center;
 	}
+	#post-title {
+		color: #e07a5f;
+		text-transform: uppercase;
+		text-decoration: underline;
+		font-weight: bold;
+	}
+	#categories {
+		display: flex;
+		justify-content: start;
+		width: 70%;
+	}
+	.category {
+		background-color: #534741;
+		border-radius: 100px;
+		padding: 5px 10px;
+		color: white;
+		text-align: center;
+	}
+	#post-content {
+		border: 1px solid #534741;
+		border-radius: 23px;
+		width: 70%;
+		padding: 2%
+	}
+</style>
+<style>
+	#comments-div {
+		padding: 5%
+	}
+	#comments-form {
+		width: 40%;
+		margin-bottom: 2%;
+		border: 1px solid #534741;
+		border-radius: 23px;
+		padding: 2%;
+	}
+	#comments-container {
+		display:flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.comment {
+		border: 1px solid #534741;
+		border-radius: 23px;
+		padding: 1%;
+	}
 </style>
 {% endblock %}
 {% block body %}
 	<div id="post">
-		<h1>{{ post.name }}</h1>
+		<h1 id="post-title">{{ post.name }}</h1>
 		<div id="categories">
 			{% for category in post.categories %}
 			<span class="category">
@@ -28,32 +74,40 @@
 		<div id="medias">
 			{% for media in post.medias %}
 					{% if media.isVideo %}
-						<iframe width="500" height="285" src="{{media.path}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+						<iframe width="300" height="150" src="{{media.path}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 					{% else %}
 						<img src="{{ asset('uploads/pictures/' ~ media.path) }}">
 					{% endif %}
 			{% endfor %}
 		</div>
-		<div id="content">
+		<div id="post-content">
 			<p>{{ post.content }}</p>
 		</div>
+		{% if isAuthor %}
+			<div id="post-action">
+				<a href="{{ path('app_posts_index') }}">back to list</a>
+
+				<a href="{{ path('app_posts_edit', {'id': post.id}) }}">edit</a>
+
+				{{ include('posts/_delete_form.html.twig') }}
+			</div>
+		{% endif %}
 	</div>
-	<div id="comments">
+	<div id="comments-div">
+		<div id="comments-form">
+			<p>Add a comment</p>
 			{{ form_start(form)  }}
+				{{ form_widget(form) }}
 				<button class="btn btn-success">{{ button_label|default('Save') }}</button>
 			{{ form_end(form) }}
-		
+		</div>
+		<div id="comments-container">
 		{% for comment in post.comments %}
-		<div>
-			<p>{{ comment.title}}</p>
-			<p>{{ comment.content }}</p>
+			<div class="comment">
+				<p>{{ comment.title}}</p>
+				<p>{{ comment.content }}</p>
+			</div>
+		{% endfor %}
 		</div>
 	</div>
-
-	{% endfor %}
-	<a href="{{ path('app_posts_index') }}">back to list</a>
-
-	<a href="{{ path('app_posts_edit', {'id': post.id}) }}">edit</a>
-
-	{{ include('posts/_delete_form.html.twig') }}
 {% endblock %}
