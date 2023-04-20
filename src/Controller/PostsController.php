@@ -49,15 +49,15 @@ class PostsController extends AbstractController
 				}
 			}
 
-			$videos = $form->get('video')->getData();
-			foreach ($videos as $video) {
-				if ($video) {
-					$videoLink = new Media();
-					$video = str_replace("watch?v=", "embed/", $video);
-					$videoLink->setPath($video);
-					$videoLink->setPost($post);
-					$videoLink->setIsVideo(true);
-					$mediaRepository->save($videoLink, true);
+			$videos = $form->get('videos')->getData();
+			foreach ($videos as $videoLink) {
+				if ($videoLink) {
+					$videoLink = str_replace("watch?v=", "embed/", $videoLink);
+					$video = new Media();
+					$video->setPath($videoLink);
+					$video->setPost($post);
+					$video->setIsVideo(true);
+					$mediaRepository->save($video, true);
 				}
 			}
 

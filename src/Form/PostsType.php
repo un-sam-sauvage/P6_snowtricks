@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Posts;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -42,13 +43,21 @@ class PostsType extends AbstractType
 					]
 				)
 			)
-			->add('video', TextType::class, 
-				array(
-					'label' => 'video',
+			->add(
+				'videos',
+				CollectionType::class,
+				[
+					'entry_type' => TextType::class,
+					'entry_options' => [
+						'attr' => ['class' => 'email-box'],
+					],
+					'allow_add' => true,
 					'mapped' => false,
 					'required' => false,
-					'allow_extra_fields' => true
-				)
+					'prototype' => true,
+					'label' => 'video',
+					// 'allow_extra_fields' => true
+				]
 			);
 	}
 

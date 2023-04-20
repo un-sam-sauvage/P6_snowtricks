@@ -1,18 +1,43 @@
 {{ form_start(form) }}
-	{{ form_widget(form) }}
-	<button class="btn btn-primary" id="add-video">Ajouter une video</button>
-	<button class="btn btn-success">{{ button_label|default('Save') }}</button>
+{{ form_row(form.name) }}
+{{ form_row(form.content) }}
+{{ form_row(form.categories) }}
+{{ form_row(form.author) }}
+
+<div class="mb-3">
+	<label for="posts_videos_0" class="form-label">Vidéos</label>
+	{# Liste des vidéos #}
+	<ul>
+		{% for video in post.medias|filter(media => media.isVideo) %}
+			<li>{{video.path}}</li>
+		{% endfor %}
+	</ul>
+	<input type="text" id="posts_videos_0" name="posts[videos][0]" class="email-box form-control">
+</div>
+
+<div class="videos" data-index="{{ form.videos|length > 0 ? form.videos|last.vars.name + 1 : 1 }}" data-prototype="{{ form_widget(form.videos.vars.prototype)|e('html_attr') }}"></div>
+<button type="button" class="btn btn-primary add_item_link" data-collection-holder-class="videos">Ajouter une video</button>
+
+{# <button class="btn btn-primary" id="add-video">Ajouter une video</button> #}
+<button class="btn btn-success">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
 
 <script>
-	let inputPost = document.getElementById("posts_video");
-	inputPost.name += "[]";
-	document.getElementById("add-video").addEventListener("click", btn => {
-		btn.preventDefault();
-		let newVideo = inputPost.cloneNode(true);
-		newVideo.id = "";
-		inputPost.parentNode.appendChild(newVideo);
-	})
+	const addFormToCollection = (e) => {
+		const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+
+		const item = document.createElement('div');
+		item.classList = 'my-3';
+
+		item.innerHTML = collectionHolder.dataset.prototype.replace(/__name__/g, collectionHolder.dataset.index);
+
+		collectionHolder.appendChild(item);
+
+		collectionHolder.dataset.index ++;
+	};
+	document.querySelectorAll('.add_item_link').forEach(btn => {
+		btn.addEventListener("click", addFormToCollection)
+	});
 </script>
 <style>
 	#posts {
