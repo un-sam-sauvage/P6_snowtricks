@@ -58,7 +58,7 @@
 {% block body %}
 	{# {{parent()}} permet d'appeler le contenu du block de base sinon, l'écrase.#}
 	<div id="welcome-message">
-		<p>Welcome {{username}} on snowtrick's website. A community forum where you can share awesome tricks from snow sports !</p>
+		<p>Welcome {% if app.user %}{{app.user.username}}{% endif %} on snowtrick's website. A community forum where you can share awesome tricks from snow sports !</p>
 	</div>
 
 	<div id="posts">

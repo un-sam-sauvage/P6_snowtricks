@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Comments;
-use App\Entity\Posts;
 use App\Form\CommentsType;
 use App\Repository\CommentsRepository;
 use App\Repository\PostsRepository;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +33,8 @@ class CommentsController extends AbstractController
 		if ($form->isSubmitted() && $form->isValid()) {
 			$post = $postsRepository->find($id);
 			$comment->setPosts($post);
+			$comment->setAuthor($this->getUser());
+			$comment->setCreatedAt(new DateTimeImmutable());
 			$commentsRepository->save($comment, true);
 
 			return $this->redirectToRoute('app_posts_show', ["id" => $id], Response::HTTP_SEE_OTHER);

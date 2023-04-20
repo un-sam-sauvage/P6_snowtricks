@@ -20,8 +20,8 @@ final class Version20230316135857 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE media ADD post_id INT NOT NULL');
-        $this->addSql('ALTER TABLE media ADD CONSTRAINT FK_6A2CA10C4B89032C FOREIGN KEY (post_id) REFERENCES posts (id)');
+        // $this->addSql('ALTER TABLE media ADD post_id INT NOT NULL');
+        // $this->addSql('ALTER TABLE media ADD CONSTRAINT FK_6A2CA10C4B89032C FOREIGN KEY (post_id) REFERENCES posts (id)');
 
     }
 

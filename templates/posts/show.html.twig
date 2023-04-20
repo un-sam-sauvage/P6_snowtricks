@@ -59,6 +59,13 @@
 		border-radius: 23px;
 		padding: 1%;
 	}
+	.comment-header {
+		display: flex;
+		justify-content: space-between;
+	}
+	.comment-username {
+		font-weight: bold;
+	}
 </style>
 {% endblock %}
 {% block body %}
@@ -94,16 +101,23 @@
 		{% endif %}
 	</div>
 	<div id="comments-div">
-		<div id="comments-form">
-			<p>Add a comment</p>
-			{{ form_start(form)  }}
-				{{ form_widget(form) }}
-				<button class="btn btn-success">{{ button_label|default('Save') }}</button>
-			{{ form_end(form) }}
-		</div>
+		{% if app.user.id is defined %}
+			<div id="comments-form">
+				<p>Add a comment</p>
+				{{ form_start(form)  }}
+					{{ form_widget(form) }}
+					<button class="btn btn-success">{{ button_label|default('Save') }}</button>
+				{{ form_end(form) }}
+			</div>
+		{% endif %}
 		<div id="comments-container">
+		<h2>Comments</h2>
 		{% for comment in post.comments %}
 			<div class="comment">
+				<div class="comment-header">
+					<p class="comment-username">{{ comment.author.username}}</p>
+					<p>{{ comment.createdAt|date('d-m-Y') }}</p>
+				</div>
 				<p>{{ comment.title}}</p>
 				<p>{{ comment.content }}</p>
 			</div>
