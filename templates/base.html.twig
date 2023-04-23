@@ -64,9 +64,12 @@
 			<nav>
 				<a href="/" id="navbar-brand">Snowtricks</a>
 				<ul id="navbar-links">
-					{% if app.user.id is defined %}
+					{% if app.user %}
 					<li class="">
 						<a class="navbar-link" href="/logout">Logout</a>
+					</li>
+					<li>
+						<a class="navbar-link" href="/profile/{{app.user.id}}">Profile</a>
 					</li>
 					{% else %}
 					<li class="">
