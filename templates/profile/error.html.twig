@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+
+{% block stylesheets %}
+<style>
+	#error-message {
+		width: fit-content;
+		padding: 1%;
+		margin: 2% auto;
+		border-radius: 23px;
+		background-color: red;
+		color: white;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+	<p id="error-message">{{ message }}</p>
+{% endblock %}

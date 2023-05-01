@@ -6,6 +6,7 @@ use App\Entity\Posts;
 use App\Entity\Media;
 use App\Form\CommentsType;
 use App\Form\PostsType;
+use App\Repository\CommentsRepository;
 use App\Repository\MediaRepository;
 use App\Repository\PostsRepository;
 use App\Service\FileUploader;
@@ -61,7 +62,6 @@ class PostsController extends AbstractController
 				}
 			}
 
-			
 			return $this->redirectToRoute('app_posts_index', [], Response::HTTP_SEE_OTHER);
 		}
 
@@ -72,20 +72,24 @@ class PostsController extends AbstractController
 	}
 
 	#[Route('/{id}', name: 'app_posts_show', methods: ['GET'])]
-	public function show(Posts $post): Response
+	public function show(Posts $post, CommentsRepository $commentsRepository, Request $request): Response
 	{
 		$isAuthor = ($this->getUser() == $post->getAuthor() ? true : false);
-		//TODO:
-		//faire les condition : si auteur || si admin
-		// $hasPermission = false;
+		$isAdmin = ($this->getUser()->getRoles() == "admin" ? true : false);
+		
 		$form = $this->createForm(CommentsType::class, null, [
 			'action' => $this->generateUrl("app_comments_new", ["id" => $post->getId()]) ,
 			'method' => 'POST'
 		]);
+		$page = (int)$request->query->get("page", 1);
+		$comments = $commentsRepository->getPaginatedComments($page, 1, $post);
+
 		return $this->render('posts/show.html.twig', [
 			'post' => $post,
 			'form' => $form,
-			'isAuthor' => $isAuthor
+			'isAuthor' => $isAuthor,
+			"isAdmin" => $isAdmin,
+			"comments" => $comments
 		]);
 	}
 
