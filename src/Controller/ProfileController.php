@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,8 +16,13 @@ class ProfileController extends AbstractController {
 
 		if ($this->getUser() != null) {
 			if ($this->getUser()->getUserIdentifier() == $user->getUsername()) {
+				$form = $this->createForm(UserType::class, null, [
+					'action' => $this->generateUrl("app_user_edit", ["id" => $user->getId()]),
+					'method' => 'POST'
+				]);
 				return $this->render("profile/index.html.twig", [
-					"test" => $user->getUsername()
+					"username" => $user->getUsername(),
+					"form" => $form
 				]);
 			} else {
 				return $this->render("profile/error.html.twig", [
@@ -30,8 +36,4 @@ class ProfileController extends AbstractController {
 		}
 	}
 
-	// #[Route("/profile/{id}/edit", name:"edit-profile")]
-	// public function editProfile() {
-		
-	// }
 }

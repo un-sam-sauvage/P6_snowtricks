@@ -75,7 +75,7 @@ class PostsController extends AbstractController
 	public function show(Posts $post, CommentsRepository $commentsRepository, Request $request): Response
 	{
 		$isAuthor = ($this->getUser() == $post->getAuthor() ? true : false);
-		$isAdmin = ($this->getUser()->getRoles() == "admin" ? true : false);
+		$isAdmin = (($this->getUser() && $this->getUser()->getRoles() == "admin") ? true : false);
 		
 		$form = $this->createForm(CommentsType::class, null, [
 			'action' => $this->generateUrl("app_comments_new", ["id" => $post->getId()]) ,
