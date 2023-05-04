@@ -2,10 +2,10 @@
 
 {% block body %}
 <h1>{{ username }}</h1>
+<h2>You can change here your profile picture</h2>
 
-{{ form_start(form) }}
-	{{ form_widget(form) }}
+	{# comment faire pour qu'il y ait que ça qui soit pris en compte ? #}
+	{{ form_widget(form.imgPath) }}
 	<button class="btn btn-success">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
 
 {% endblock %}

@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProfileController extends AbstractController {
 
 	#[Route("/profile/{id}", name:"profile")]
-	public function index (User $user, Request $request) {
+	public function index (User $user) {
 
 		if ($this->getUser() != null) {
 			if ($this->getUser()->getUserIdentifier() == $user->getUsername()) {
