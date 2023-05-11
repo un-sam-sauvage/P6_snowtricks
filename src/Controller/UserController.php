@@ -3,13 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\ProfilePictureType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\FileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Config\Framework\UidConfig;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -56,6 +58,29 @@ class UserController extends AbstractController
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
+			$userRepository->save($user, true);
+
+			return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+		}
+
+		return $this->renderForm('user/edit.html.twig', [
+			'user' => $user,
+			'form' => $form,
+		]);
+	}
+	#[Route('/{id}/edit-profile-picture', name: 'app_user_edit_profile_picture', methods: ['POST'] )]
+	public function editProfilePicture (Request $request, User $user, UserRepository $userRepository, FileUploader $fileUploader) {
+
+		$form = $this->createForm(ProfilePictureType::class, $user);
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			/** @var UploadedFile $imageFile */
+			$imageFile = $form->get('imgPath')->getData();
+
+			$imageFileName = $fileUploader->upload($imageFile);
+
+			$user->setImgPath($imageFileName);
 			$userRepository->save($user, true);
 
 			return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);

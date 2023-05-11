@@ -115,6 +115,7 @@
 		{% for comment in comments %}
 			<div class="comment">
 				<div class="comment-header">
+					<img src="{{ asset('uploads/pictures/' ~ comment.author.imgPath)}}" alt="profile picture">
 					<p class="comment-username">{{ comment.author.username}}</p>
 					<p>{{ comment.createdAt|date('d-m-Y') }}</p>
 				</div>

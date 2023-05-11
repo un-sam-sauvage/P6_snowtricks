@@ -3,9 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\UserType;
+use App\Form\ProfilePictureType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -13,10 +12,11 @@ class ProfileController extends AbstractController {
 
 	#[Route("/profile/{id}", name:"profile")]
 	public function index (User $user) {
-
+		//TODO: faire en sorte d'afficher la photo en cours afin de la remplacer et pas deux insert
 		if ($this->getUser() != null) {
 			if ($this->getUser()->getUserIdentifier() == $user->getUsername()) {
-				$form = $this->createForm(UserType::class, null, [
+				//Faire un autre formType juste pour les photos de profil.
+				$form = $this->createForm(ProfilePictureType::class, null, [
 					'action' => $this->generateUrl("app_user_edit", ["id" => $user->getId()]),
 					'method' => 'POST'
 				]);

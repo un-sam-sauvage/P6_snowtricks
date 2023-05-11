@@ -4,8 +4,9 @@
 <h1>{{ username }}</h1>
 <h2>You can change here your profile picture</h2>
 
-	{# comment faire pour qu'il y ait que ça qui soit pris en compte ? #}
-	{{ form_widget(form.imgPath) }}
+{{ form_start(form, {'action': path('app_user_edit_profile_picture', {id: app.user.id}), 'method': '¨POST'}) }}
+	{{ form_widget(form) }}
 	<button class="btn btn-success">{{ button_label|default('Save') }}</button>
+{{ form_end(form)}}
 
 {% endblock %}

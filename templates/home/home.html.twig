@@ -2,23 +2,39 @@
 {% block stylesheets %}
 <style>
 	#welcome-message {
-		display: flex;
-		justify-content: center;
-		background-color: #e07a5f;
+		background-color: #ecaf9f;
 		width: 100%;
-		font-weight: bold;
-		padding: 5px;
+		height: 44vw;
+		font-size: 4vw;
 		color: #534741;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-evenly;
+		align-items: center;
+		position: relative;
+	}
+	#go-to-post {
+		position: absolute;
+		right: 2%;
+		bottom: 3%;
+		color: #534741;
+		font-size: 2vw;
+		background-color: #f4f1de;
+		border-radius: 100px;
+		padding: 0 1%;
 	}
 	#welcome-message > p {
 		margin: 0;
 	}
 	#posts {
-		width: 50%;
-		margin: 2% auto 0;
-		display: flex;
-		flex-direction: column;
-		gap: 25px;
+		padding: 5%
+	}
+	#posts-container {
+		display: grid;
+		grid-template-columns: auto auto auto auto auto;
+		justify-content: space-evenly;
+		row-gap: 20px;
 	}
 	.post-card {
 		background-color: #81b29a;
@@ -26,50 +42,54 @@
 		border: 1px solid #638475;
 		border-radius: 23px;
 		padding: 2%;
+		width: 300px;
+		height: 200px;
 		position: relative;
 	}
 	.post-title {
 		font-weight: bold;
 		text-transform: uppercase;
-	}
-	.post-link {
 		position: absolute;
-		bottom: 2%;
-		right: 2%;
-		text-decoration: none;
-		color: #3d405b;
+		bottom: 0;
 	}
-	.post-link::before {
-		content: "→";
-		text-align: center;
-		position: absolute;
+	.post-img-container > img {
 		width: 100%;
-		height: 100%;
-		transform: scaleX(0);
-		background-color: #81b29a;
-		transition: 0.25s;
-	}
-	.post-link:hover::before {
-		transform: scaleX(100%);
-		color: #032539;
+		aspect-ratio: 5/2.5;
+		object-fit: contain;
 	}
 </style>
 {% endblock %}
 {% block body %}
 	{# {{parent()}} permet d'appeler le contenu du block de base sinon, l'écrase.#}
 	<div id="welcome-message">
-		<p>Welcome {% if app.user %}{{app.user.username}}{% endif %} on snowtrick's website. A community forum where you can share awesome tricks from snow sports !</p>
+		<p>Welcome {% if app.user %}{{app.user.username}}{% endif %} on <span style="font-weight:bold; text-decoration: underline;">SNOWTRICKS</span></p>
+		<p>A community forum where you can share awesome tricks from snow sports !</p>
+		<a id="go-to-post" href="#posts"><i class="fa-solid fa-arrow-down"></i></a>
 	</div>
-
 	<div id="posts">
 		<h1>LAST POSTS</h1>
-		{% for post in posts %}
-			<div class="post-card">
-				<p class="post-title">{{ post.name }}</p>
-				<p class="post-content">{{post.content}}</p>
-				<a class="post-link" href="/posts/{{post.id}}">Go to post</a>
-			</div>
-		{% endfor %}
+		<div id="posts-container">
+			{% for post in posts %}
+				<div class="post-card">
+					<div class="post-img-container">
+						{% set break = false %}
+						{% for media in post.medias %}
+							{% if not break  %}
+								{% if not media.isVideo %}
+									<img src="{{ asset('uploads/pictures/' ~ media.path) }}">
+									{% set break = true %}
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+						{% if not break %}
+									<img src="{{ asset('uploads/pictures/defaultPicture.png') }}">
+						{% endif %}
+						
+					</div>
+					<p class="post-title"><a href="/posts/{{post.id}}">{{ post.name }}</a></p>
+				</div>
+			{% endfor %}
+		</div>
 	</div>
 	
 {% endblock %}
