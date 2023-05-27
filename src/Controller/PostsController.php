@@ -93,6 +93,23 @@ class PostsController extends AbstractController
 		]);
 	}
 
+	#[Route('/getComment/{id}', name: 'app_get_comments', methods: ['POST'])]
+	public function getComment (Posts $post, CommentsRepository $commentsRepository, Request $request): Response {
+		$params = json_decode($request->getContent(), true);
+		$comments = $commentsRepository->getPaginatedComments($params["page"], 1, $post);
+		//TODO: à voir pourquoi est ce que je suis obligé de reconstruire l'objet pour le passer en ajax.
+		//je ne sais pas par quel autre moyen je pourrais le passer car quand j'essaie de passer juste le $comments, le js me log un array d'objet vide.
+		//par contre si je log le comments et que je passe $comments[0]->getId() j'ai bien le bon id qui est log dans mon js
+		return new Response(
+			json_encode(
+				array(
+					"comments" => $comments,
+					"msg" => "everything went well"
+					)
+				)
+			, 200);
+	}
+
 	#[Route('/{id}/edit', name: 'app_posts_edit', methods: ['GET', 'POST'])]
 	public function edit(Request $request, Posts $post, PostsRepository $postsRepository, FileUploader $fileUploader, MediaRepository $mediaRepository): Response
 	{

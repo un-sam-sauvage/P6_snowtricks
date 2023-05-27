@@ -123,6 +123,48 @@
 				<p>{{ comment.content }}</p>
 			</div>
 		{% endfor %}
+		<button id="btn_next-comment" class="btn btn-primary">Get next comment</button>
+		<button id="btn_last-comment" class="btn btn-primary">Get last comment</button>
 		</div>
 	</div>
 {% endblock %}
+{% block javascripts %}
+	<script>
+		let currentPage = 1;
+
+		document.getElementById("btn_next-comment").addEventListener("click", btn => {
+			btn.preventDefault();
+			currentPage++;
+			getComment(currentPage);
+		})
+
+		document.getElementById("btn_last-comment").addEventListener("click", btn => {
+			btn.preventDefault();
+			currentPage--;
+			if (currentPage <= 1) {
+				currentPage = 1
+			}
+			getComment(currentPage);
+		})
+
+		function getComment (page) {
+			fetch("getComment/{{ post.id }}", {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					page : page,
+				})
+			}).then(res => {
+				return res.json()
+			}).then(data => {
+				console.log(data.comments);
+			}).catch(error => {
+				console.error(error);
+			})
+		}
+	</script>
+
+{% endblock %}
+

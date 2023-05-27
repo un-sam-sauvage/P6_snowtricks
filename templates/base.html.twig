@@ -83,11 +83,12 @@
 				</ul>
 			</nav>
 		{% endblock %}
-		{% block javascripts %}
-			{{ encore_entry_script_tags('app') }}
-		{% endblock %}
+
 	</head>
 	<body>
 		{% block body %}coucou{% endblock %}
+		{% block javascripts %}
+			{{ encore_entry_script_tags('app') }}
+		{% endblock %}
 	</body>
 </html>
