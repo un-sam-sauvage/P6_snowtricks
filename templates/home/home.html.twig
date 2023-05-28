@@ -49,13 +49,26 @@
 	.post-title {
 		font-weight: bold;
 		text-transform: uppercase;
-		position: absolute;
-		bottom: 0;
+		margin-bottom: 0;
 	}
 	.post-img-container > img {
 		width: 100%;
 		aspect-ratio: 5/2.5;
 		object-fit: contain;
+	}
+	.post-bottom-card{
+		margin-top: 5%;
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		padding: 0 2%
+	}
+	.delete-post{
+		cursor: pointer;
+		transition: color .15s ease-in-out;
+	}
+	.delete-post:hover {
+		color: red;
 	}
 </style>
 {% endblock %}
@@ -86,9 +99,91 @@
 						{% endif %}
 						
 					</div>
-					<p class="post-title"><a href="/posts/{{post.id}}">{{ post.name }}</a></p>
+					{# TODO: afficher les boutons pour supprimer ou modifier un post en fonction de si on est un auteur ou un admin #}
+					<div class="post-bottom-card">
+						<a class="post-title" href="/posts/{{post.id}}">{{ post.name }}</a>
+						{% if isAdmin %}
+						<span class="delete-post"><i class="fa-solid fa-trash"></i></span>
+						<input type="hidden" data-id-post="{{post.id}}">
+						{% endif %}
+					</div>
 				</div>
 			{% endfor %}
 		</div>
 	</div>
+	<button id="btn_load-more-posts" class="btn btn-primary">Load more posts</button>
+	{% if isAdmin %}
+	<div id="popup-confirm-delete" style="display: none">
+		<p id="popup-text-confirm">Are you sure to delete the post named: <span id="popup-name-post"></span></p>
+		<input type="hidden" id="popup-id-post-to-delete">
+		<button id="popup-confirm" class="btn btn-primary">Yes</button>
+		<button id="popup-cancel" class="btn btn-secondary">No</button>
+	</div>
+	{% endif %}
+	
+{% endblock %}
+{% block javascripts %}
+	<script>
+		let offset = 1;
+
+		document.getElementById("btn_load-more-posts").addEventListener("click", btn => {
+			btn.preventDefault();
+			offset ++;
+			getPost(offset);
+		})
+		//function qui permet de récupérer la suite des posts en AJAX
+		function getPost (offset) {
+			fetch("getPost", {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					offset : offset,
+				})
+			}).then(res => {
+				return res.json()
+			}).then(data => {
+				console.log(data.posts);
+			}).catch(error => {
+				console.error(error);
+			})
+		}
+
+		{% if isAdmin %}
+		document.querySelectorAll(".delete-post").forEach(btnDelete => {
+			btnDelete.addEventListener("click", btnClicked => {
+				let postName = btnClicked.target.parentNode.querySelector(".post-title").textContent;
+				document.getElementById("popup-confirm-delete").style.display = "block";
+				document.getElementById("popup-name-post").textContent = postName;
+				document.getElementById("popup-id-post-to-delete").value = btnClicked.target.parentNode.querySelector("data-id-post").value
+			})
+		})
+
+		document.getElementById("popup-confirm").addEventListener("click", btn => {
+			btn.preventDefault();
+			//TODO: comment fetch par le nom de la route tout en passant des paramètre ?
+			fetch("/delete", {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					postId : document.getElementById("popup-id-post-to-delete").value,
+				})
+			}).then(res => {
+				return res.json()
+			}).then(data => {
+				console.log(data.msg);
+			}).catch(error => {
+				console.error(error);
+			})
+		})
+
+		document.getElementById("popup-cancel").addEventListener("click", btn => {
+			btn.preventDefault();
+			document.getElementById("popup-confirm-delete").style.display = "none";
+		})
+		{% endif %}
+	</script>
 {% endblock %}
