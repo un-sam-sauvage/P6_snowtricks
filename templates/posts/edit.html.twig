@@ -1,13 +1,69 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Edit Posts{% endblock %}
-
+{% block stylesheets %}
+<style>
+	.img-post-content {
+	max-width: 300px;
+	max-height: 150px;
+	}
+	.media-container{
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		align-items: center;
+	}
+	#media-container {
+		display: flex;
+		justify-content: space-evenly;
+	}
+</style>
+{% endblock %}
 {% block body %}
-    <h1>Edit Posts</h1>
+	<h1>Edit Posts</h1>
 
-    {{ include('posts/_form.html.twig', {'button_label': 'Update'}) }}
+	{{ include('posts/_form.html.twig', {'button_label': 'Update'}) }}
+	{{ include('posts/_delete_form.html.twig') }}
 
-    <a href="{{ path('app_posts_index') }}">back to list</a>
-
-    {{ include('posts/_delete_form.html.twig') }}
+	<a href="{{ path('app_posts_index') }}">back to list</a>
+	<div id="media-container">
+		{% for media in post.medias %}
+		<div class="media-container">
+			{% if media.isVideo %}
+			<iframe width="300" height="150" src="{{media.path}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+			{% else %}
+			<img class="img-post-content" src="{{ asset('uploads/pictures/' ~ media.path) }}">
+			{% endif %}
+			<button class="delete-media btn btn-danger" data-id-media="{{media.id}}">Delete this media</button>
+		</div>
+		{% endfor %}
+	</div>
+	
+{% endblock %}
+{% block javascripts %}
+<script>
+	document.querySelectorAll(".delete-media").forEach(btn => {
+		btn.addEventListener("click", btnClicked => {
+			if (confirm("Are you sure to delete this media ?")) {
+				//TODO: faire la même chose que pour l'autre delete
+				fetch("deleteMedia", {
+					method: "POST",
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						idMedia: btnClicked.target.getAttribute("data-id-media")
+					})
+				}).then(res => {
+					return res.json()
+				}).then(data => {
+					console.log(data);
+				}).catch(error => {
+					console.error(error);
+				})
+			}
+		})
+	})
+	
+</script>
 {% endblock %}

@@ -17,8 +17,6 @@
 
 <div class="videos" data-index="{{ form.videos|length > 0 ? form.videos|last.vars.name + 1 : 1 }}" data-prototype="{{ form_widget(form.videos.vars.prototype)|e('html_attr') }}"></div>
 <button type="button" class="btn btn-primary add_item_link" data-collection-holder-class="videos">Ajouter une video</button>
-
-{# <button class="btn btn-primary" id="add-video">Ajouter une video</button> #}
 <button class="btn btn-success">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
 

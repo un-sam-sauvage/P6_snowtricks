@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/posts')]
@@ -75,7 +76,7 @@ class PostsController extends AbstractController
 	public function show(Posts $post, CommentsRepository $commentsRepository, Request $request): Response
 	{
 		$isAuthor = ($this->getUser() == $post->getAuthor() ? true : false);
-		$isAdmin = (($this->getUser() && $this->getUser()->getRoles() == "admin") ? true : false);
+		$isAdmin = ($this->getUser() && in_array("ROLE_ADMIN", $this->getUser()->getRoles()));
 		
 		$form = $this->createForm(CommentsType::class, null, [
 			'action' => $this->generateUrl("app_comments_new", ["id" => $post->getId()]) ,
@@ -100,14 +101,12 @@ class PostsController extends AbstractController
 		//TODO: à voir pourquoi est ce que je suis obligé de reconstruire l'objet pour le passer en ajax.
 		//je ne sais pas par quel autre moyen je pourrais le passer car quand j'essaie de passer juste le $comments, le js me log un array d'objet vide.
 		//par contre si je log le comments et que je passe $comments[0]->getId() j'ai bien le bon id qui est log dans mon js
-		return new Response(
-			json_encode(
-				array(
-					"comments" => $comments,
-					"msg" => "everything went well"
-					)
-				)
-			, 200);
+		return new JsonResponse(
+			array(
+				"comments" => $comments,
+				"msg" => "everything went well"
+			)
+		);
 	}
 
 	#[Route('/{id}/edit', name: 'app_posts_edit', methods: ['GET', 'POST'])]
@@ -131,7 +130,7 @@ class PostsController extends AbstractController
 					$mediaRepository->save($media, true);
 				}
 			}
-
+   
 			$videos = $form->get('video')->getData();
 			foreach ($videos as $video) {
 				if ($video) {

@@ -8,90 +8,90 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CommentsRepository::class)]
 class Comments
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+	#[ORM\Id]
+	#[ORM\GeneratedValue]
+	#[ORM\Column]
+	private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
+	#[ORM\Column(length: 255)]
+	private ?string $title = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $content = null;
+	#[ORM\Column(length: 255)]
+	private ?string $content = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Posts $posts = null;
+	#[ORM\ManyToOne(inversedBy: 'comments')]
+	#[ORM\JoinColumn(nullable: false)]
+	private ?Posts $posts = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?user $author = null;
+	#[ORM\ManyToOne(inversedBy: 'comments')]
+	#[ORM\JoinColumn(nullable: false)]
+	private ?user $author = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+	#[ORM\Column]
+	private ?\DateTimeImmutable $created_at = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+	public function getId(): ?int
+	{
+		return $this->id;
+	}
 
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
+	public function getTitle(): ?string
+	{
+		return $this->title;
+	}
 
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
+	public function setTitle(string $title): self
+	{
+		$this->title = $title;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
+	public function getContent(): ?string
+	{
+		return $this->content;
+	}
 
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
+	public function setContent(string $content): self
+	{
+		$this->content = $content;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getPosts(): ?Posts
-    {
-        return $this->posts;
-    }
+	public function getPosts(): ?Posts
+	{
+		return $this->posts;
+	}
 
-    public function setPosts(?Posts $posts): self
-    {
-        $this->posts = $posts;
+	public function setPosts(?Posts $posts): self
+	{
+		$this->posts = $posts;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getAuthor(): ?user
-    {
-        return $this->author;
-    }
+	public function getAuthor(): ?user
+	{
+		return $this->author;
+	}
 
-    public function setAuthor(?user $author): self
-    {
-        $this->author = $author;
+	public function setAuthor(?user $author): self
+	{
+		$this->author = $author;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
+	public function getCreatedAt(): ?\DateTimeImmutable
+	{
+		return $this->created_at;
+	}
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): self
-    {
-        $this->created_at = $created_at;
+	public function setCreatedAt(\DateTimeImmutable $created_at): self
+	{
+		$this->created_at = $created_at;
 
-        return $this;
-    }
+		return $this;
+	}
 }

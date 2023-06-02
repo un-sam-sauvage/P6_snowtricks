@@ -3,7 +3,22 @@
 {% block title %}Posts{% endblock %}
 {% block stylesheets %}
 <style>
-	img {
+	#link-back-to-posts {
+		position: absolute;
+		padding: 1%;
+		top: 2%;
+		left: 2%;
+		background-color: bisque;
+		color: rgb(185, 185, 185);
+		border-radius: 53px;
+		text-decoration: none;
+		transition: .2s;
+	}
+	#link-back-to-posts:hover {
+		background-color: rgb(201, 180, 154);
+		color: bisque;
+	}
+	.img-post-content {
 		max-width: 300px;
 		max-height: 150px;
 	}
@@ -12,17 +27,42 @@
 		flex-direction: column;
 		gap: 50px;
 		align-items: center;
+		position: relative;
+	}
+	#post-title-container {
+		position: relative;
+		width: 80%;
+		height: 20%;
+		margin: 0 auto;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	#img-post-title {
+		width: 100%;
+		height: 100%;
 	}
 	#post-title {
 		color: #e07a5f;
+		background-color: #4c2f27cb;
 		text-transform: uppercase;
 		text-decoration: underline;
 		font-weight: bold;
+		position: absolute;
+		top: 40%;
+		padding: 1%;
+		border-radius: 53px;
+		transition: .25s;
+	}
+	#post-title:hover {
+		opacity: 0.25
 	}
 	#categories {
 		display: flex;
 		justify-content: start;
 		width: 70%;
+		gap: 10px;
+		margin: 2% auto;
 	}
 	.category {
 		background-color: #534741;
@@ -36,6 +76,10 @@
 		border-radius: 23px;
 		width: 70%;
 		padding: 2%
+	}
+	#post-action {
+		display: flex;
+		gap: 20px;
 	}
 </style>
 <style>
@@ -70,20 +114,28 @@
 {% endblock %}
 {% block body %}
 	<div id="post">
-		<h1 id="post-title">{{ post.name }}</h1>
-		<div id="categories">
-			{% for category in post.categories %}
-			<span class="category">
-				{{category.name}}
-			</span>
+		<a id="link-back-to-posts" href="{{ path('app_posts_index') }}">back to posts</a>
+		<div id="post-title-container">
+			{% set break = false %}
+			{% for media in post.medias %}
+				{% if not break  %}
+					{% if not media.isVideo %}
+						<img id="post-title-img" src="{{ asset('uploads/pictures/' ~ media.path) }}">
+						{% set break = true %}
+					{% endif %}
+				{% endif %}
 			{% endfor %}
+			{% if not break %}
+						<img id="post-title-img" src="{{ asset('uploads/pictures/defaultPicture.png') }}">
+			{% endif %}
+			<h1 id="post-title">{{ post.name }}</h1>
 		</div>
 		<div id="medias">
 			{% for media in post.medias %}
 					{% if media.isVideo %}
 						<iframe width="300" height="150" src="{{media.path}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 					{% else %}
-						<img src="{{ asset('uploads/pictures/' ~ media.path) }}">
+						<img class="img-post-content" src="{{ asset('uploads/pictures/' ~ media.path) }}">
 					{% endif %}
 			{% endfor %}
 		</div>
@@ -92,13 +144,20 @@
 		</div>
 		{% if isAuthor or isAdmin %}
 			<div id="post-action">
-				<a href="{{ path('app_posts_index') }}">back to list</a>
-
-				<a href="{{ path('app_posts_edit', {'id': post.id}) }}">edit</a>
-
+				<a class="btn btn-primary" href="{{ path('app_posts_edit', {'id': post.id}) }}">Edit</a>
 				{{ include('posts/_delete_form.html.twig') }}
 			</div>
 		{% endif %}
+	</div>
+	<div id="categories">
+		{% for category in post.categories %}
+		<span class="category">
+			{{category.name}}
+		</span>
+		{% endfor %}
+		<span class="category">
+			Created : {{post.createdAt|date('d-m-Y')}}
+		</span>
 	</div>
 	<div id="comments-div">
 		{% if app.user.id is defined %}
@@ -159,11 +218,18 @@
 			}).then(res => {
 				return res.json()
 			}).then(data => {
-				console.log(data.comments);
+				console.log(data);
 			}).catch(error => {
 				console.error(error);
 			})
 		}
+
+		document.querySelectorAll(".img-post-content").forEach(img => {
+			img.addEventListener("click", imgClicked => {
+				let postTitleImg = document.getElementById("post-title-img");
+				postTitleImg.src = imgClicked.target.src;
+			})
+		})
 	</script>
 
 {% endblock %}
