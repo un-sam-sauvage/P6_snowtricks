@@ -101,9 +101,17 @@ class PostsController extends AbstractController
 		//TODO: à voir pourquoi est ce que je suis obligé de reconstruire l'objet pour le passer en ajax.
 		//je ne sais pas par quel autre moyen je pourrais le passer car quand j'essaie de passer juste le $comments, le js me log un array d'objet vide.
 		//par contre si je log le comments et que je passe $comments[0]->getId() j'ai bien le bon id qui est log dans mon js
+		$commentReturn = array();
+		foreach($comments as $comment) {
+			$commentReturn[] = [
+				"ID" => $comment->getId(),
+				"title" => $comment->getTitle(),
+				"content" => $comment->getContent()
+			];
+		}
 		return new JsonResponse(
 			array(
-				"comments" => $comments,
+				"comments" => $commentReturn,
 				"msg" => "everything went well"
 			)
 		);

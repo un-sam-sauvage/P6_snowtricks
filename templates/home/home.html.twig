@@ -99,11 +99,14 @@
 						{% endif %}
 						
 					</div>
-					{# TODO: afficher les boutons pour supprimer ou modifier un post en fonction de si on est un auteur ou un admin #}
 					<div class="post-bottom-card">
 						<a class="post-title" href="/posts/{{post.id}}">{{ post.name }}</a>
 						{% if isAdmin %}
-						<span class="delete-post"><i class="fa-solid fa-trash"></i></span>
+						<form method="post" action="{{ path('app_posts_delete', {'id': post.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+							<button type="submit" class="btn"><i class="fa-solid fa-trash"></i></button>
+						</form>
+
 						<input type="hidden" data-id-post="{{post.id}}">
 						{% endif %}
 					</div>
@@ -112,14 +115,7 @@
 		</div>
 	</div>
 	<button id="btn_load-more-posts" class="btn btn-primary">Load more posts</button>
-	{% if isAdmin %}
-	<div id="popup-confirm-delete" style="display: none">
-		<p id="popup-text-confirm">Are you sure to delete the post named: <span id="popup-name-post"></span></p>
-		<input type="hidden" id="popup-id-post-to-delete">
-		<button id="popup-confirm" class="btn btn-primary">Yes</button>
-		<button id="popup-cancel" class="btn btn-secondary">No</button>
-	</div>
-	{% endif %}
+
 	
 {% endblock %}
 {% block javascripts %}
@@ -153,36 +149,27 @@
 		{% if isAdmin %}
 		document.querySelectorAll(".delete-post").forEach(btnDelete => {
 			btnDelete.addEventListener("click", btnClicked => {
-				let postName = btnClicked.target.parentNode.querySelector(".post-title").textContent;
-				document.getElementById("popup-confirm-delete").style.display = "block";
-				document.getElementById("popup-name-post").textContent = postName;
-				document.getElementById("popup-id-post-to-delete").value = btnClicked.target.parentNode.querySelector("data-id-post").value
+				if (confirm("Are you sure to delete this post ? ")) {
+					//TODO: mettre un input hidden avec le token crsf qu'on récupère puis passe dans le body
+					let postId = document.getElementById("popup-id-post-to-delete").value;
+					fetch("/posts/" + postId, {
+						method: "POST",
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							postId : postId,
+							_token: "{{ csrf_token('delete' ~ "+ postId +") }}"
+						})
+					}).then(res => {
+						return res.json()
+					}).then(data => {
+						console.log(data.msg);
+					}).catch(error => {
+						console.error(error);
+					})
+				}
 			})
-		})
-
-		document.getElementById("popup-confirm").addEventListener("click", btn => {
-			btn.preventDefault();
-			//TODO: comment fetch par le nom de la route tout en passant des paramètre ?
-			fetch("/delete", {
-				method: "POST",
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					postId : document.getElementById("popup-id-post-to-delete").value,
-				})
-			}).then(res => {
-				return res.json()
-			}).then(data => {
-				console.log(data.msg);
-			}).catch(error => {
-				console.error(error);
-			})
-		})
-
-		document.getElementById("popup-cancel").addEventListener("click", btn => {
-			btn.preventDefault();
-			document.getElementById("popup-confirm-delete").style.display = "none";
 		})
 		{% endif %}
 	</script>
