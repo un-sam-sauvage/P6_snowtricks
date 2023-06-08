@@ -110,6 +110,11 @@
 	.comment-username {
 		font-weight: bold;
 	}
+	.profile-picture {
+		width: 5%;
+		border-radius: 50%;
+		background-color: black;
+	}
 </style>
 {% endblock %}
 {% block body %}
@@ -174,7 +179,7 @@
 		{% for comment in comments %}
 			<div class="comment">
 				<div class="comment-header">
-					<img src="{{ asset('uploads/pictures/' ~ comment.author.imgPath)}}" alt="profile picture">
+					<img class="profile-picture" src="{{ asset('uploads/pictures/' ~ comment.author.imgPath)}}" alt="profile picture">
 					<p class="comment-username">{{ comment.author.username}}</p>
 					<p>{{ comment.createdAt|date('d-m-Y') }}</p>
 				</div>
@@ -219,6 +224,38 @@
 				return res.json()
 			}).then(data => {
 				console.log(data);
+				data.comments.forEach(comment => {
+
+					let commentDiv = document.getElementById("comments-container");
+					let div = document.createElement("div");
+					let header = document.createElement("div");
+					let profilePicture = document.createElement("img");
+					let username = document.createElement("p");
+					let date = document.createElement("p");
+					let title = document.createElement("p");
+					let content = document.createElement("p");
+
+					div.classList.add("comment");
+					header.classList.add("comment-header");
+					profilePicture.classList.add("profile-picture");
+					username.classList.add("comment-username");
+
+					profilePicture.src = "/uploads/pictures/" + comment.author.imgPath;
+
+					username.textContent = comment.author.username;
+					date.textContent = comment.createdAt;
+					title.textContent = comment.title;
+					content.textContent = comment.content;
+
+					header.appendChild(profilePicture);
+					header.appendChild(username);
+					header.appendChild(date);
+					div.appendChild(header);
+					div.appendChild(title);
+					div.appendChild(content);
+					commentDiv.appendChild(div);
+				})
+
 			}).catch(error => {
 				console.error(error);
 			})

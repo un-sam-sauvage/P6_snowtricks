@@ -102,12 +102,10 @@
 					<div class="post-bottom-card">
 						<a class="post-title" href="/posts/{{post.id}}">{{ post.name }}</a>
 						{% if isAdmin %}
-						<form method="post" action="{{ path('app_posts_delete', {'id': post.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
-							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
-							<button type="submit" class="btn"><i class="fa-solid fa-trash"></i></button>
-						</form>
+							<input type="hidden" class="input_token-to-delete" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+							<input type="hidden" class="input_id-to-delete" value="{{post.id}}">
+							<span class="delete-post"><i class="fa-solid fa-trash"></i></span>
 
-						<input type="hidden" data-id-post="{{post.id}}">
 						{% endif %}
 					</div>
 				</div>
@@ -150,21 +148,23 @@
 		document.querySelectorAll(".delete-post").forEach(btnDelete => {
 			btnDelete.addEventListener("click", btnClicked => {
 				if (confirm("Are you sure to delete this post ? ")) {
-					//TODO: mettre un input hidden avec le token crsf qu'on récupère puis passe dans le body
-					let postId = document.getElementById("popup-id-post-to-delete").value;
+					let postId = btnClicked.target.parentNode.parentNode.querySelector(".input_id-to-delete").value;
+					let token = btnClicked.target.parentNode.parentNode.querySelector(".input_token-to-delete").value
 					fetch("/posts/" + postId, {
 						method: "POST",
 						headers: {
 							'Content-Type': 'application/json'
 						},
 						body: JSON.stringify({
-							postId : postId,
-							_token: "{{ csrf_token('delete' ~ "+ postId +") }}"
+							_token: token
 						})
 					}).then(res => {
 						return res.json()
 					}).then(data => {
-						console.log(data.msg);
+						console.log(data);
+						if (data.result == "succes") {
+							btnClicked.target.parentNode.parentNode.remove();
+						}
 					}).catch(error => {
 						console.error(error);
 					})
