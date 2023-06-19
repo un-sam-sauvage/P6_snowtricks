@@ -7,6 +7,7 @@ use App\Form\MediaType;
 use App\Repository\MediaRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -92,10 +93,19 @@ class MediaController extends AbstractController
 	#[Route('/{id}', name: 'app_media_delete', methods: ['POST'])]
 	public function delete(Request $request, Media $medium, MediaRepository $mediaRepository): Response
 	{
-		if ($this->isCsrfTokenValid('delete'.$medium->getId(), $request->request->get('_token'))) {
+		$params = json_decode($request->getContent(), true);
+		if ($this->isCsrfTokenValid('delete'.$medium->getId(), $params["token"])) {
 			$mediaRepository->remove($medium, true);
+		} else {
+			return new JsonResponse(array(
+				"result" => "fail",
+				"msg" => "invalid token"
+			));
 		}
 
-		return $this->redirectToRoute('app_media_index', [], Response::HTTP_SEE_OTHER);
+		return new JsonResponse(array(
+			"result" => "succes",
+			"msg" => "everything went well"
+		));
 	}
 }

@@ -175,21 +175,25 @@
 			</div>
 		{% endif %}
 		<div id="comments-container">
-		<h2>Comments</h2>
+		<h2>Comments n°<span id="comment-number">1</span></h2>
 		{% for comment in comments %}
 			<div class="comment">
 				<div class="comment-header">
-					<img class="profile-picture" src="{{ asset('uploads/pictures/' ~ comment.author.imgPath)}}" alt="profile picture">
+					{% if comment.author.imgPath %}
+						<img class="profile-picture" src="{{ asset('uploads/pictures/' ~ comment.author.imgPath)}}" alt="profile picture">
+					{% else %}
+						<img class="profile-picture" src="{{ asset('uploads/pictures/defaultPicture.png')}}" alt="profile-picture">
+					{% endif %}
 					<p class="comment-username">{{ comment.author.username}}</p>
-					<p>{{ comment.createdAt|date('d-m-Y') }}</p>
+					<p>{{ comment.createdAt|date('Y-m-d') }}</p>
 				</div>
 				<p>{{ comment.title}}</p>
 				<p>{{ comment.content }}</p>
 			</div>
 		{% endfor %}
+		</div>
 		<button id="btn_next-comment" class="btn btn-primary">Get next comment</button>
 		<button id="btn_last-comment" class="btn btn-primary">Get last comment</button>
-		</div>
 	</div>
 {% endblock %}
 {% block javascripts %}
@@ -205,13 +209,15 @@
 		document.getElementById("btn_last-comment").addEventListener("click", btn => {
 			btn.preventDefault();
 			currentPage--;
-			if (currentPage <= 1) {
+			if (currentPage < 1) {
 				currentPage = 1
+			} else {
+				getComment(currentPage);
 			}
-			getComment(currentPage);
 		})
 
 		function getComment (page) {
+			document.getElementById("comment-number").textContent = page;
 			fetch("getComment/{{ post.id }}", {
 				method: "POST",
 				headers: {
@@ -224,9 +230,13 @@
 				return res.json()
 			}).then(data => {
 				console.log(data);
+				let commentDiv = document.getElementById("comments-container");
+				document.querySelectorAll(".comment").forEach(comment => {
+					comment.remove();
+				})
+				
 				data.comments.forEach(comment => {
 
-					let commentDiv = document.getElementById("comments-container");
 					let div = document.createElement("div");
 					let header = document.createElement("div");
 					let profilePicture = document.createElement("img");
@@ -240,10 +250,14 @@
 					profilePicture.classList.add("profile-picture");
 					username.classList.add("comment-username");
 
-					profilePicture.src = "/uploads/pictures/" + comment.author.imgPath;
+					if (comment.author.imgPath == null) {
+						profilePicture.src = "/uploads/pictures/defaultPicture.png";
+					} else {
+						profilePicture.src = "/uploads/pictures/" + comment.author.imgPath;
+					}
 
 					username.textContent = comment.author.username;
-					date.textContent = comment.createdAt;
+					date.textContent = comment.createdAt.date.split(" ")[0];
 					title.textContent = comment.title;
 					content.textContent = comment.content;
 

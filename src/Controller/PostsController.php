@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/posts')]
 class PostsController extends AbstractController
@@ -29,13 +30,21 @@ class PostsController extends AbstractController
 	}
 
 	#[Route('/new', name: 'app_posts_new', methods: ['GET', 'POST'])]
-	public function new(Request $request, PostsRepository $postsRepository, FileUploader $fileUploader, MediaRepository $mediaRepository): Response
+	public function new(Request $request, PostsRepository $postsRepository, FileUploader $fileUploader, MediaRepository $mediaRepository, SluggerInterface $slugger): Response
 	{
+		if (!$this->getUser()) {
+			return $this->render("profile/error.html.twig", [
+				"message" => "You must be connected to create a post."
+			]);
+		}
 		$post = new Posts();
 		$form = $this->createForm(PostsType::class, $post);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
+			$postName = $post->getName();
+			$slug = $slugger->slug($postName)->lower();
+			$post->setSlug($slug);
 			$postsRepository->save($post, true);
 
 			/** @var UploadedFile $imageFile */
@@ -62,7 +71,7 @@ class PostsController extends AbstractController
 					$mediaRepository->save($video, true);
 				}
 			}
-
+			$this->addFlash('notice', 'Your post was succesfully created');
 			return $this->redirectToRoute('app_posts_index', [], Response::HTTP_SEE_OTHER);
 		}
 
@@ -72,7 +81,7 @@ class PostsController extends AbstractController
 		]);
 	}
 
-	#[Route('/{id}', name: 'app_posts_show', methods: ['GET'])]
+	#[Route('/{slug}', name: 'app_posts_show', methods: ['GET'])]
 	public function show(Posts $post, CommentsRepository $commentsRepository, Request $request): Response
 	{
 		$isAuthor = ($this->getUser() == $post->getAuthor() ? true : false);
@@ -95,7 +104,7 @@ class PostsController extends AbstractController
 	}
 
 	#[Route('/getComment/{id}', name: 'app_get_comments', methods: ['POST'])]
-	public function getComment (Posts $post, CommentsRepository $commentsRepository, Request $request): Response {
+	public function getComment (Posts $post, CommentsRepository $commentsRepository, Request $request): JsonResponse {
 		$params = json_decode($request->getContent(), true);
 		$comments = $commentsRepository->getPaginatedComments($params["page"], 1, $post);
 		$commentReturn = array();
@@ -109,7 +118,6 @@ class PostsController extends AbstractController
 					"imgPath" => $comment->getAuthor()->getImgPath()
 				],
 				"createdAt" => $comment->getCreatedAt()
-				// "createdAt" => date("Y-m-d", strtotime($comment->getCreatedAt()))
 			];
 		}
 		return new JsonResponse(
@@ -120,13 +128,38 @@ class PostsController extends AbstractController
 		);
 	}
 
+	#[Route('/getPosts', name:"app_get_more_posts", methods: ['POST'])] 
+	public function getPosts (PostsRepository $postsRepository, Request $request): JsonResponse {
+		$params = json_decode($request->getContent(), true);
+		$posts = $postsRepository->getPaginatedPost(2, $params["page"]);
+		$postsReturn = [];
+		foreach ($posts as $post) {
+			$imgPath = (!empty($post->getFirstPicture()) ? 'uploads/pictures/'.$post->getFirstPicture()->getPath() : 'uploads/pictures/defaultPicture.png');
+			$postsReturn[] = [
+				"id" => $post->getId(),
+				"name" => $post->getName(),
+				"imgPath" => $imgPath,
+				"slug" => $post->getSlug()
+			];
+		}
+		return new JsonResponse(
+			array(
+				"posts" => $postsReturn,
+				"msg" => "everything went well"
+			)
+		);
+	}
+
 	#[Route('/{id}/edit', name: 'app_posts_edit', methods: ['GET', 'POST'])]
-	public function edit(Request $request, Posts $post, PostsRepository $postsRepository, FileUploader $fileUploader, MediaRepository $mediaRepository): Response
+	public function edit(Request $request, Posts $post, PostsRepository $postsRepository, FileUploader $fileUploader, MediaRepository $mediaRepository, SluggerInterface $slugger): Response
 	{
 		$form = $this->createForm(PostsType::class, $post);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
+			$postName = $post->getName();
+			$slug = $slugger->slug($postName)->lower();
+			$post->setSlug($slug);
 			$postsRepository->save($post, true);
 
 			/** @var UploadedFile $imageFile */
@@ -141,16 +174,18 @@ class PostsController extends AbstractController
 					$mediaRepository->save($media, true);
 				}
 			}
-   
-			$videos = $form->get('video')->getData();
-			foreach ($videos as $video) {
-				if ($video) {
-					$videoLink = new Media();
-					$video = str_replace("watch?v=", "embed/", $video);
-					$videoLink->setPath($video);
-					$videoLink->setPost($post);
-					$videoLink->setIsVideo(true);
-					$mediaRepository->save($videoLink, true);
+
+			if ($form->get('videos')) {
+				$videos = $form->get('videos')->getData();
+				foreach ($videos as $video) {
+					if ($video) {
+						$videoLink = new Media();
+						$video = str_replace("watch?v=", "embed/", $video);
+						$videoLink->setPath($video);
+						$videoLink->setPost($post);
+						$videoLink->setIsVideo(true);
+						$mediaRepository->save($videoLink, true);
+					}
 				}
 			}
 			return $this->redirectToRoute('app_posts_index', [], Response::HTTP_SEE_OTHER);

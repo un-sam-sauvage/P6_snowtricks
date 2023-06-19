@@ -61,6 +61,21 @@
 				.navbar-link:hover::before {
 					transform: scaleX(100%);
 				}
+				#flash-notice-container{
+					position: fixed;
+					display: flex;
+					width: 15%;
+					flex-direction: column;
+					top: 12%;
+					right: 2%;
+				}
+				.flash-notice {
+					padding: 3%;
+					background-color: black;
+					color: white;
+					border-radius: 23px;
+					text-align: center;
+				}
 			</style>
 			<nav>
 				<a href="/" id="navbar-brand">Snowtricks</a>
@@ -89,9 +104,21 @@
 
 	</head>
 	<body>
+		<div id="flash-notice-container">
+			{% for message in app.flashes('notice') %}
+				<div class="flash-notice">
+					{{ message }}
+				</div>
+			{% endfor %}
+		</div>
 		{% block body %}coucou{% endblock %}
 		{% block javascripts %}
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}
+		<script>
+			setTimeout(() => {
+				document.getElementById("flash-notice-container").remove();
+			}, 5000);
+		</script>
 	</body>
 </html>

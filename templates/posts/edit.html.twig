@@ -34,7 +34,7 @@
 			{% else %}
 			<img class="img-post-content" src="{{ asset('uploads/pictures/' ~ media.path) }}">
 			{% endif %}
-			<button class="delete-media btn btn-danger" data-id-media="{{media.id}}">Delete this media</button>
+			<button class="delete-media btn btn-danger" data-id-media="{{media.id}}" data-id-token="{{ csrf_token('delete' ~ media.id) }}">Delete this media</button>
 		</div>
 		{% endfor %}
 	</div>
@@ -45,19 +45,23 @@
 	document.querySelectorAll(".delete-media").forEach(btn => {
 		btn.addEventListener("click", btnClicked => {
 			if (confirm("Are you sure to delete this media ?")) {
-				//TODO: faire la même chose que pour l'autre delete
-				fetch("deleteMedia", {
+				let idMediaToDelete = btnClicked.target.getAttribute("data-id-media");
+				let token = btnClicked.target.getAttribute("data-id-token");
+				fetch("/media/"+ idMediaToDelete, {
 					method: "POST",
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						idMedia: btnClicked.target.getAttribute("data-id-media")
+						token: token
 					})
 				}).then(res => {
 					return res.json()
 				}).then(data => {
 					console.log(data);
+					if (data.result == "succes") {
+						btnClicked.target.parentNode.remove();
+					}
 				}).catch(error => {
 					console.error(error);
 				})

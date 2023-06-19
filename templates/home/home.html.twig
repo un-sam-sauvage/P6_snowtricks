@@ -70,6 +70,11 @@
 	.delete-post:hover {
 		color: red;
 	}
+	@media all and (max-width: 767px){
+		*{
+			background: blue;
+		}
+	}
 </style>
 {% endblock %}
 {% block body %}
@@ -100,13 +105,15 @@
 						
 					</div>
 					<div class="post-bottom-card">
-						<a class="post-title" href="/posts/{{post.id}}">{{ post.name }}</a>
-						{% if isAdmin %}
+						<a class="post-title" href="/posts/{{post.slug}}">{{ post.name }}</a>
+						{% if isAdmin or app.user == post.author %}
 							<input type="hidden" class="input_token-to-delete" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
 							<input type="hidden" class="input_id-to-delete" value="{{post.id}}">
 							<span class="delete-post"><i class="fa-solid fa-trash"></i></span>
 
+							<a href="/posts/{{post.id}}/edit"><i class="fa-solid fa-pen-to-square"></i></a>
 						{% endif %}
+
 					</div>
 				</div>
 			{% endfor %}
@@ -118,27 +125,71 @@
 {% endblock %}
 {% block javascripts %}
 	<script>
-		let offset = 1;
+		let offset = 0;
 
 		document.getElementById("btn_load-more-posts").addEventListener("click", btn => {
 			btn.preventDefault();
-			offset ++;
+			offset += 2;
 			getPost(offset);
 		})
 		//function qui permet de récupérer la suite des posts en AJAX
 		function getPost (offset) {
-			fetch("getPost", {
+			console.log(offset);
+			fetch("/posts/getPosts", {
 				method: "POST",
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					offset : offset,
+					page : offset,
 				})
 			}).then(res => {
 				return res.json()
 			}).then(data => {
-				console.log(data.posts);
+				console.log(data);
+				data.posts.forEach(post => {
+
+					let postCard = document.createElement("div");
+					let postImgContainer = document.createElement("div");
+					let img = document.createElement("img");
+					let postBottomCard = document.createElement("div");
+					let linkToPost = document.createElement("a");
+
+					//faire la vérif de si on est admin
+						// let inputToken = document.createElement("input");
+						// let inputId = document.createElement("input");
+						// let deleteSpan = document.createElement("span");
+						// let deleteIcon = document.createElement("i");
+						// let editLink = document.createElement("a");
+						// let editIcon = document.createElement("i");
+
+						// inputToken.type = "hidden";
+						// inputId.type = "hidden";
+						// inputId.value = post.id;
+						// deleteSpan.classList.add("delete-post");
+						// deleteIcon.classList.add("fa-solid", "fa-trash");
+						// editLink.href = "/posts/"+ post.id + "/edit";
+						// editIcon.classList.add("fa-solid", "fa-pen-to-square");
+						// deleteSpan.appendChild(deleteIcon);
+						// editLink.appendChild(editIcon);
+						// deletePost(deleteSpan);
+					//fin de la vérif
+
+					postCard.classList.add("post-card");
+					postImgContainer.classList.add("post-img-container");
+					postBottomCard.classList.add("post-bottom-card");
+					linkToPost.classList.add("post-title");
+
+					linkToPost.href = "/posts/"+ post.slug;
+					linkToPost.textContent = post.name;
+
+					img.src = post.imgPath
+
+					postBottomCard.appendChild(linkToPost);
+					postImgContainer.appendChild(img);
+					postCard.append(postImgContainer, postBottomCard);
+					document.getElementById("posts-container").appendChild(postCard);
+				})
 			}).catch(error => {
 				console.error(error);
 			})
@@ -146,6 +197,10 @@
 
 		{% if isAdmin %}
 		document.querySelectorAll(".delete-post").forEach(btnDelete => {
+			deletePost(btnDelete);
+		})
+
+		function deletePost (btnDelete) {
 			btnDelete.addEventListener("click", btnClicked => {
 				if (confirm("Are you sure to delete this post ? ")) {
 					let postId = btnClicked.target.parentNode.parentNode.querySelector(".input_id-to-delete").value;
@@ -170,7 +225,7 @@
 					})
 				}
 			})
-		})
+		}
 		{% endif %}
 	</script>
 {% endblock %}

@@ -15,7 +15,7 @@ class HomeController extends AbstractController {
 		//Pour les auteurs il faudraqu'ils cliquent sur le post pour afficher en détail afin de pouvoir le modifier / le supprimer
 		$isAdmin = ($this->getUser() && in_array("ROLE_ADMIN", $this->getUser()->getRoles()));
 
-		$posts = $postsRepository->findAll();
+		$posts = $postsRepository->getPaginatedPost(2, 0);
 		return $this->render("home/home.html.twig", [
 			"posts" => $posts,
 			"isAdmin" => $isAdmin
