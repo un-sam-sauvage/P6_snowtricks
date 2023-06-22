@@ -71,8 +71,26 @@
 		color: red;
 	}
 	@media all and (max-width: 767px){
-		*{
-			background: blue;
+		#welcome-message{
+			width: 100%;
+			font-size: 3.5vw;
+			padding: 5%;
+		}
+		#posts-container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+
+		}
+		.post-card {
+			width: 50%;
+			height: 100px;
+		}
+		.post-title {
+			font-size: 2vw;
+		}
+		#btn_load-more-posts {
+			margin-left: 27%;
 		}
 	}
 </style>
