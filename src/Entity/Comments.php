@@ -30,8 +30,8 @@ class Comments
 	#[ORM\JoinColumn(nullable: false)]
 	private ?user $author = null;
 
-	#[ORM\Column]
-	private ?\DateTimeImmutable $created_at = null;
+	#[ORM\Column (options: ["default" => "CURRENT_TIMESTAMP"])]
+	private ?\DateTimeImmutable $created_at;
 
 	public function getId(): ?int
 	{

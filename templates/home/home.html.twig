@@ -173,26 +173,6 @@
 					let postBottomCard = document.createElement("div");
 					let linkToPost = document.createElement("a");
 
-					//faire la vérif de si on est admin
-						// let inputToken = document.createElement("input");
-						// let inputId = document.createElement("input");
-						// let deleteSpan = document.createElement("span");
-						// let deleteIcon = document.createElement("i");
-						// let editLink = document.createElement("a");
-						// let editIcon = document.createElement("i");
-
-						// inputToken.type = "hidden";
-						// inputId.type = "hidden";
-						// inputId.value = post.id;
-						// deleteSpan.classList.add("delete-post");
-						// deleteIcon.classList.add("fa-solid", "fa-trash");
-						// editLink.href = "/posts/"+ post.id + "/edit";
-						// editIcon.classList.add("fa-solid", "fa-pen-to-square");
-						// deleteSpan.appendChild(deleteIcon);
-						// editLink.appendChild(editIcon);
-						// deletePost(deleteSpan);
-					//fin de la vérif
-
 					postCard.classList.add("post-card");
 					postImgContainer.classList.add("post-img-container");
 					postBottomCard.classList.add("post-bottom-card");
@@ -207,6 +187,30 @@
 					postImgContainer.appendChild(img);
 					postCard.append(postImgContainer, postBottomCard);
 					document.getElementById("posts-container").appendChild(postCard);
+					{% if isAdmin %}
+
+						let inputToken = document.createElement("input");
+						let inputId = document.createElement("input");
+						let deleteSpan = document.createElement("span");
+						let deleteIcon = document.createElement("i");
+						let editLink = document.createElement("a");
+						let editIcon = document.createElement("i");
+
+						inputToken.type = "hidden";
+						inputToken.value = post.token
+						inputToken.classList.add("input_token-to-delete");
+						inputId.type = "hidden";
+						inputId.classList.add("input_id-to-delete");
+						inputId.value = post.id;
+						deleteSpan.classList.add("delete-post");
+						deleteIcon.classList.add("fa-solid", "fa-trash");
+						editLink.href = "/posts/"+ post.id + "/edit";
+						editIcon.classList.add("fa-solid", "fa-pen-to-square");
+						deleteSpan.appendChild(deleteIcon);
+						editLink.appendChild(editIcon);
+						postBottomCard.append(inputToken, inputId, deleteSpan, editLink);
+						deletePost(deleteSpan);
+					{% endif %}
 				})
 			}).catch(error => {
 				console.error(error);
@@ -235,8 +239,9 @@
 						return res.json()
 					}).then(data => {
 						console.log(data);
-						if (data.result == "succes") {
-							btnClicked.target.parentNode.parentNode.remove();
+						if (data.result == "success") {
+							btnClicked.target.parentNode.parentNode.parentNode.remove();
+							console.log("je retire l'element");
 						}
 					}).catch(error => {
 						console.error(error);

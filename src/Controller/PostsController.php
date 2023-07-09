@@ -133,13 +133,16 @@ class PostsController extends AbstractController
 		$params = json_decode($request->getContent(), true);
 		$posts = $postsRepository->getPaginatedPost(2, $params["page"]);
 		$postsReturn = [];
+		$tokenProvider = $this->container->get('security.csrf.token_manager');
 		foreach ($posts as $post) {
 			$imgPath = (!empty($post->getFirstPicture()) ? 'uploads/pictures/'.$post->getFirstPicture()->getPath() : 'uploads/pictures/defaultPicture.png');
+			$token = $tokenProvider->getToken('delete'.$post->getId())->getValue();
 			$postsReturn[] = [
 				"id" => $post->getId(),
 				"name" => $post->getName(),
 				"imgPath" => $imgPath,
-				"slug" => $post->getSlug()
+				"slug" => $post->getSlug(),
+				"token" => $token
 			];
 		}
 		return new JsonResponse(
