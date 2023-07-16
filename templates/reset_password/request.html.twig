@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reset your password{% endblock %}
+
+{% block stylesheets %}
+<style>
+	h1 {
+		width: fit-content;
+		margin: 2% auto;
+	}
+	#container > form {
+		display: flex;
+		flex-direction: column;
+		width: 40%;
+		padding: 2% 5%;
+		border-radius: 5px;
+		margin: 0 auto;
+		border: 1px solid black;
+		text-align: center;
+		gap: 10px;
+	}
+	@media all and (max-width: 767px){
+		#container > form {
+			border: none;
+			width: 80%;
+			gap: 50px;
+		}
+		#global-container {
+			border: 1px solid black;
+			width: 80%;
+			height: 90%;
+			margin: 2% auto;
+			border-radius: 5px;
+			display: flex;
+			flex-direction: column;
+			gap: 50px;
+			padding: 2% 0;
+		}
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+    {% for flash_error in app.flashes('reset_password_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+    <div id="global-container">
+        <h1>Reset your password</h1>
+        <div id="container">
+            {{ form_start(requestForm) }}
+                {{ form_row(requestForm.username) }}
+                <div>
+                    <small>
+                        Enter your email address and we will send you a
+                        link to reset your password.
+                    </small>
+                </div>
+
+                <button class="btn btn-primary">Send password reset email</button>
+            {{ form_end(requestForm) }}
+        </div>
+    </div>
+{% endblock %}

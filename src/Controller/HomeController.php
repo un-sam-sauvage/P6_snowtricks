@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController {
 
-	#[Route('/', name:'homepage')]
+	#[Route('/', name:'app_home')]
 	public function index (PostsRepository $postsRepository) {
 		//on regarde si l'utilisateur est un admin.
 		//Pour les auteurs il faudraqu'ils cliquent sur le post pour afficher en détail afin de pouvoir le modifier / le supprimer

@@ -1,20 +1,60 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello LoginController!{% endblock %}
-
+{% block stylesheets %}
+<style>
+	h1 {
+		width: fit-content;
+		margin: 2% auto;
+	}
+	#container > form {
+		display: flex;
+		flex-direction: column;
+		width: 30%;
+		padding: 2% 5%;
+		border-radius: 5px;
+		margin: 0 auto;
+		border: 1px solid black;
+		text-align: center;
+		gap: 10px;
+	}
+	@media all and (max-width: 767px){
+		#container > form {
+			border: none;
+			width: 80%;
+			gap: 50px;
+		}
+		#global-container {
+			border: 1px solid black;
+			width: 80%;
+			height: 90%;
+			margin: 2% auto;
+			border-radius: 5px;
+			display: flex;
+			flex-direction: column;
+			gap: 50px;
+			padding: 2% 0;
+		}
+	}
+</style>
+{% endblock %}
 {% block body %}
 	{% if error %}
 		<div>{{error.messageKey|trans(error.messageData, "security") }}</div>
 	{% endif %}
-	<form action="{{ path('app_login') }}" method="post">
-		<label for="username">Email:</label>
-		<input type="text" id="username" name="_username" value="{{ last_username }}">
+	<div id="global-container">
+		<h1>Login</h1>
+		<div id="container">
+			<form action="{{ path('app_login') }}" method="post">
+				<label class="form-label" for="username">Email:</label>
+				<input class="form-control" type="text" id="username" name="_username" value="{{ last_username }}">
 
-		<label for="password">Password:</label>
-		<input type="password" id="password" name="_password">
+				<label class="form-label" for="password">Password:</label>
+				<input class="form-control" type="password" id="password" name="_password">
 
-		{# TODO: faire une redirection en fonction de là ou venez l'utilisateur si besoin (genre il a voulu accéder mais n'était pas connecté) #}
-
-		<button type="submit">Login</button>
-	</form>
+				<button class="btn btn-success" type="submit">Login</button>
+				<a href="/reset-password">Forgot Password ?</a>
+			</form>
+		</div>
+	</div>
 {% endblock %}

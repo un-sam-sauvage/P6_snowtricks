@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Reset your password{% endblock %}
 {% block stylesheets %}
 <style>
 	h1 {
@@ -16,6 +16,7 @@
 		margin: 0 auto;
 		border: 1px solid black;
 		text-align: center;
+		gap: 10px;
 	}
 	@media all and (max-width: 767px){
 		#container > form {
@@ -37,24 +38,14 @@
 	}
 </style>
 {% endblock %}
-
 {% block body %}
-	{% for flash_error in app.flashes('verify_email_error') %}
-		<div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-	{% endfor %}
 	<div id="global-container">
-		<h1>Registration</h1>
-
+		<h1>Reset your password</h1>
 		<div id="container">
-			{{ form_start(registrationForm) }}
-				{{ form_row(registrationForm.username) }}
-				{{ form_row(registrationForm.plainPassword, {
-					label: 'Password'
-				}) }}
-				{{ form_row(registrationForm.agreeTerms) }}
-
-				<button class="btn btn-success" type="submit" class="btn">Register</button>
-			{{ form_end(registrationForm) }}
+			{{ form_start(resetForm) }}
+				{{ form_row(resetForm.plainPassword) }}
+				<button class="btn btn-primary">Reset password</button>
+			{{ form_end(resetForm) }}
 		</div>
 	</div>
 {% endblock %}
