@@ -5,7 +5,9 @@ Then, you can open your favorite terminal and go to the directory you just creat
 You can now install all the dependancy with the command `composer require`
 
 ## Create dataset :
-Next, start your database with Xampp for example and execute the following command : `php bin/console doctrine:fixtures:load`
+ - First start your database with Xampp for example.
+ - To create the tables you will need to execute the command : `php bin/console d:m:m`
+ - And execute the following command : `php bin/console doctrine:fixtures:load`
 This will generate a dataset of post and a user for you to explore the project without having to create anything.
 
  ## Launch project :
