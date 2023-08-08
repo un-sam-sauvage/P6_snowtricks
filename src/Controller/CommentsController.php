@@ -37,7 +37,7 @@ class CommentsController extends AbstractController
 			$comment->setCreatedAt(new DateTimeImmutable());
 			$commentsRepository->save($comment, true);
 
-			return $this->redirectToRoute('app_posts_show', ["id" => $id], Response::HTTP_SEE_OTHER);
+			return $this->redirectToRoute('app_posts_show', ["slug" => $post->getSlug()], Response::HTTP_SEE_OTHER);
 		}
 
 		return $this->renderForm('comments/new.html.twig', [
